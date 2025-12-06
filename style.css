@@ -1,0 +1,176 @@
+/* Podstawy */
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #111827;
+    --bg-card: #fdf7ec;
+    --bg-card-inner: #fffaf1;
+    --accent: #fbbf24;
+    --accent-dark: #92400e;
+    --text-main: #f9fafb;
+    --text-muted: #9ca3af;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    background: var(--bg);
+    color: var(--text-main);
+}
+
+/* Główna „rama” */
+
+.qr-app {
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 32px 16px 32px;
+}
+
+/* Nagłówek */
+
+.qr-header h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.qr-header p {
+    margin: 0 0 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    max-width: 320px;
+}
+
+/* Input na URL */
+
+.url-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.url-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #4b5563;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 24px;
+}
+
+.url-input::placeholder {
+    color: #6b7280;
+}
+
+.url-input:focus {
+    border-color: #9ca3af;
+    box-shadow: 0 0 0 1px rgba(156, 163, 175, 0.3);
+}
+
+/* Karta z „makietą” mObywatel */
+
+.mock-card {
+    margin-top: 8px;
+    display: flex;
+    justify-content: center;
+}
+
+.mock-card-inner {
+    width: 100%;
+    border-radius: 24px;
+    padding: 18px 18px 24px;
+    background: var(--bg-card);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    color: #111827;
+}
+
+.mock-card-inner h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+
+.mock-subtitle {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #4b5563;
+}
+
+/* Żółty pasek ostrzegawczy */
+
+.mock-warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fef3c7;
+    border-radius: 999px;
+    padding: 8px 10px;
+    margin-bottom: 16px;
+}
+
+.mock-warning-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #fde68a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--accent-dark);
+}
+
+.mock-warning-text {
+    font-size: 12px;
+    color: #92400e;
+}
+
+/* Kontener na kod QR */
+
+.qr-container {
+    margin-top: 4px;
+    background: var(--bg-card-inner);
+    border-radius: 18px;
+    padding: 20px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qr-placeholder {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    max-width: 220px;
+}
+
+/* Obraz QR wygenerowany przez bibliotekę */
+
+#qr-container canvas,
+#qr-container img {
+    max-width: 220px;
+    max-height: 220px;
+}
+
+/* Desktop – wycentrowanie „telefonu” */
+
+@media (min-width: 768px) {
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .qr-app {
+        margin-top: 40px;
+    }
+}

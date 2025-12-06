@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <title>Generator kodów QR – weryfikacja stron</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Biblioteka do generowania kodów QR -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        defer
+    ></script>
+
+    <!-- Twój skrypt -->
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="qr-app">
+        <header class="qr-header">
+            <h1>Generator kodów QR</h1>
+            <p>
+                Na podstawie poniższego linku zostanie wygenerowany kod QR,
+                który można zeskanować naszą wersją narzędzia do weryfikacji.
+            </p>
+        </header>
+
+        <main class="qr-main">
+            <!-- Pole na adres URL -->
+            <label for="url-input" class="url-label">
+                Tu wklej dowolny adres URL
+            </label>
+            <input
+                type="text"
+                id="url-input"
+                class="url-input"
+                placeholder="https://przyklad.gov.pl"
+                autocomplete="off"
+            />
+
+            <!-- Karta z makietą ekranu weryfikacji + QR -->
+            <section class="mock-card">
+                <div class="mock-card-inner">
+                    <h2>Zweryfikuj stronę internetową</h2>
+                    <p class="mock-subtitle">
+                        Aby sprawdzić czy strona jest autentycznym serwisem
+                        rządowym otwórz aplikację mObywatel i zeskanuj kod QR.
+                    </p>
+
+                    <div class="mock-warning">
+                        <span class="mock-warning-icon">!</span>
+                        <span class="mock-warning-text">
+                            Skanuj kod tylko aplikacją mObywatel
+                        </span>
+                    </div>
+
+                    <div id="qr-container" class="qr-container">
+                        <!-- tutaj pojawi się wygenerowany kod QR -->
+                        <div id="qr-placeholder" class="qr-placeholder">
+                            Wklej adres URL powyżej, aby wygenerować kod QR
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
