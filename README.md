@@ -1,5 +1,7 @@
 # Prawda w sieci – Generator kodów QR dla stron gov.pl
 
+DEMO: [https://bartekb-it.github.io/qr-generator/](https://bartekb-it.github.io/qr-generator/)
+
 Prosty generator kodów QR, stylizowany na interfejs administracji publicznej / mObywatel.  
 **Docelowo działa jako widżet umieszczony bezpośrednio na stronach `gov.pl` (np. kafelek z boku lub popup na telefonie), który generuje kod QR powiązany z aktualną stroną.**
 Kod ten obywatel może zeskanować w aplikacji mObywatel (moduł Verifier), żeby upewnić się, że strona jest potwierdzonym serwisem administracji publicznej.
