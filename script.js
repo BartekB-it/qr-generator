@@ -1,66 +1,126 @@
-// script.js – generator kodów QR dla dowolnego URL
-// Uwaga: QR zawiera dokładnie ten tekst, który użytkownik poda w polu.
-// Dzięki temu jest kompatybilny z Twoim obecnym skanerem, który oczekuje URL-a.
+// script.js – generator kodów QR z wykorzystaniem backendu (nonce + sesja)
+
+const API_BASE = ""; 
+// "" = ten sam origin co backend (np. gdy generator stoi za tym samym Flaskiem).
+// Jeśli backend będzie gdzie indziej, ustaw tu pełny URL, np. "https://verifier.gov.pl".
+
+let qrInstance = null;
 
 /**
- * Prosta normalizacja – obcina spacje z przodu/tyłu.
- * (Jeśli chcesz, możesz tutaj dodać bardziej zaawansowaną walidację/uzupełnianie https://)
+ * Prosta normalizacja – obcina spacje.
+ * Tutaj można dodać dodatkową walidację / wymuszanie https.
  */
 function normalizeInput(value) {
     return value.trim();
 }
 
-let qrInstance = null;
-
-function initQr() {
+/**
+ * Czyści kontener QR i wyświetla prostą wiadomość.
+ */
+function showPlaceholder(message) {
     const container = document.getElementById("qr-container");
     if (!container) return;
 
-    // Usuwamy placeholder (zostanie tylko przy braku adresu)
-    const placeholder = document.getElementById("qr-placeholder");
-    if (placeholder) {
-        placeholder.remove();
-    }
+    container.innerHTML =
+        `<div id="qr-placeholder" class="qr-placeholder">${message}</div>`;
+    qrInstance = null;
+}
 
+/**
+ * Tworzy instancję QRCode, jeśli jeszcze nie istnieje.
+ */
+function ensureQrInstance() {
+    if (qrInstance) {
+        return qrInstance;
+    }
+    const container = document.getElementById("qr-container");
+    if (!container) return null;
+
+    container.innerHTML = "";
     qrInstance = new QRCode(container, {
-        text: "https://gov.pl", // domyślny przykładowy adres (zostanie nadpisany)
+        text: "",
         width: 220,
         height: 220,
         colorDark: "#111827",
         colorLight: "#fffaf1",
         correctLevel: QRCode.CorrectLevel.M
     });
+    return qrInstance;
 }
 
-function updateQr(text) {
-    if (!qrInstance) {
-        initQr();
-    }
-    if (!qrInstance) return;
-
-    const value = normalizeInput(text);
+/**
+ * Wywołuje backend, żeby utworzyć sesję (nonce) dla danego URL
+ * i generuje QR na podstawie zwróconego qr_payload.
+ */
+async function createSessionAndUpdateQr(rawUrl) {
+    const value = normalizeInput(rawUrl);
 
     if (!value) {
-        // Jeśli pole jest puste, czyścimy QR i pokazujemy placeholder
-        const container = document.getElementById("qr-container");
-        container.innerHTML =
-            '<div id="qr-placeholder" class="qr-placeholder">Wklej adres URL powyżej, aby wygenerować kod QR</div>';
-        qrInstance = null;
+        showPlaceholder("Wklej adres URL powyżej, aby wygenerować kod QR");
         return;
     }
 
-    // W prototypie wpisujemy dokładnie to, co użytkownik podał
-    // (dla pełnej produkcji można tu wprowadzić schemat z nonce + backendem).
-    qrInstance.clear();
-    qrInstance.makeCode(value);
+    showPlaceholder("Tworzę sesję weryfikacji i generuję kod QR...");
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/create-session`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url: value })
+        });
+
+        if (!resp.ok) {
+            let msg = `Błąd serwera (status ${resp.status})`;
+            try {
+                const data = await resp.json();
+                if (data && data.error) {
+                    msg = data.error;
+                }
+            } catch (e) {
+                // ignorujemy
+            }
+            showPlaceholder(`Nie udało się utworzyć sesji: ${msg}`);
+            return;
+        }
+
+        const data = await resp.json();
+        if (!data.ok) {
+            showPlaceholder(`Nie udało się utworzyć sesji: ${data.error || "Nieznany błąd"}`);
+            return;
+        }
+
+        const qrPayload = data.qr_payload;
+        const token = data.token;
+
+        const inst = ensureQrInstance();
+        if (!inst) {
+            showPlaceholder("Nie udało się zainicjalizować generatora kodów QR");
+            return;
+        }
+
+        inst.clear();
+        inst.makeCode(qrPayload);
+
+        // (Opcjonalnie) możesz gdzieś w UI pokazać token / status ważności:
+        // console.log("Nowa sesja:", token, "ważna (s) =", data.expires_in);
+
+    } catch (err) {
+        showPlaceholder(`Nie udało się utworzyć sesji: ${err.message || err}`);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("url-input");
+    if (!input) return;
 
-    // Generujemy kod QR przy wpisywaniu (z lekkim debounce)
+    // Domyślny placeholder
+    showPlaceholder("Wklej adres URL powyżej, aby wygenerować kod QR");
+
     let debounceTimer = null;
 
+    // Generujemy kod QR przy wpisywaniu (z lekkim debounce)
     input.addEventListener("input", () => {
         const value = input.value;
 
@@ -69,15 +129,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         debounceTimer = setTimeout(() => {
-            updateQr(value);
+            createSessionAndUpdateQr(value);
         }, 400);
     });
 
-    // Enter zatwierdza od razu (bez debounce)
+    // Enter = natychmiastowe wygenerowanie sesji
     input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
-            updateQr(input.value);
+            createSessionAndUpdateQr(input.value);
         }
     });
 });
