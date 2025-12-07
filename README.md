@@ -1,7 +1,8 @@
 # Prawda w sieci – Generator kodów QR dla stron gov.pl
 
 Prosty generator kodów QR, stylizowany na interfejs administracji publicznej / mObywatel.  
-Docelowo ma być używany przez urzędników do generowania kodów QR prowadzących do **ZWERYFIKOWANYCH** stron `gov.pl`.
+**Docelowo działa jako widżet umieszczony bezpośrednio na stronach `gov.pl` (np. kafelek z boku lub popup na telefonie), który generuje kod QR powiązany z aktualną stroną.**
+Kod ten obywatel może zeskanować w aplikacji mObywatel (moduł Verifier), żeby upewnić się, że strona jest potwierdzonym serwisem administracji publicznej.
 
 W wersji frontend-only (np. na GitHub Pages):
 
@@ -165,7 +166,7 @@ Wersja front-only:
   - TLS/SSL,
   - biała lista stron rządowych,
 
-  znajduje się w aplikacji **Verifier**, która interpretuje kod QR.
+  znajduje się w aplikacji **Verifier**, która interpretuje kod QR. W naszym scenariuszu to właśnie Verifier osadzony w mObywatel sprawdza domenę `gov.pl`, certyfikat TLS oraz oficjalną listę domen, a generator pełni rolę wygodnego widżetu na stronie gov, który wystawia kod do zeskanowania.
 
 - W pełnym wdrożeniu:
   - generator byłby umieszczony za logowaniem w panelu administracyjnym (np. tylko dla urzędników),
