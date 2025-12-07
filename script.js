@@ -111,6 +111,34 @@ function ensureQrInstance() {
 //     }
 // }
 
+/**
+ * Prosta wersja: generuje kod QR bezpośrednio z podanego URL,
+ * bez wywoływania backendu /api/create-session.
+ */
+function createSessionAndUpdateQr(rawUrl) {
+    const value = normalizeInput(rawUrl);
+
+    if (!value) {
+        showPlaceholder("Wklej adres URL powyżej, aby wygenerować kod QR");
+        return;
+    }
+
+    // Jeśli ktoś poda samą domenę (np. "gov.pl"), dolep "https://"
+    let urlToEncode = value;
+    if (!/^https?:\/\//i.test(urlToEncode)) {
+        urlToEncode = "https://" + urlToEncode;
+    }
+
+    const inst = ensureQrInstance();
+    if (!inst) {
+        showPlaceholder("Nie udało się zainicjalizować generatora kodów QR");
+        return;
+    }
+
+    inst.clear();
+    inst.makeCode(urlToEncode);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("url-input");
     if (!input) return;
