@@ -48,68 +48,68 @@ function ensureQrInstance() {
     return qrInstance;
 }
 
-/**
- * Wywołuje backend, żeby utworzyć sesję (nonce) dla danego URL
- * i generuje QR na podstawie zwróconego qr_payload.
- */
-async function createSessionAndUpdateQr(rawUrl) {
-    const value = normalizeInput(rawUrl);
+// /**
+//  * Wywołuje backend, żeby utworzyć sesję (nonce) dla danego URL
+//  * i generuje QR na podstawie zwróconego qr_payload.
+//  */
+// async function createSessionAndUpdateQr(rawUrl) {
+//     const value = normalizeInput(rawUrl);
 
-    if (!value) {
-        showPlaceholder("Wklej adres URL powyżej, aby wygenerować kod QR");
-        return;
-    }
+//     if (!value) {
+//         showPlaceholder("Wklej adres URL powyżej, aby wygenerować kod QR");
+//         return;
+//     }
 
-    showPlaceholder("Tworzę sesję weryfikacji i generuję kod QR...");
+//     showPlaceholder("Tworzę sesję weryfikacji i generuję kod QR...");
 
-    try {
-        const resp = await fetch(`${API_BASE}/api/create-session`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ url: value })
-        });
+//     try {
+//         const resp = await fetch(`${API_BASE}/api/create-session`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify({ url: value })
+//         });
 
-        if (!resp.ok) {
-            let msg = `Błąd serwera (status ${resp.status})`;
-            try {
-                const data = await resp.json();
-                if (data && data.error) {
-                    msg = data.error;
-                }
-            } catch (e) {
-                // ignorujemy
-            }
-            showPlaceholder(`Nie udało się utworzyć sesji: ${msg}`);
-            return;
-        }
+//         if (!resp.ok) {
+//             let msg = `Błąd serwera (status ${resp.status})`;
+//             try {
+//                 const data = await resp.json();
+//                 if (data && data.error) {
+//                     msg = data.error;
+//                 }
+//             } catch (e) {
+//                 // ignorujemy
+//             }
+//             showPlaceholder(`Nie udało się utworzyć sesji: ${msg}`);
+//             return;
+//         }
 
-        const data = await resp.json();
-        if (!data.ok) {
-            showPlaceholder(`Nie udało się utworzyć sesji: ${data.error || "Nieznany błąd"}`);
-            return;
-        }
+//         const data = await resp.json();
+//         if (!data.ok) {
+//             showPlaceholder(`Nie udało się utworzyć sesji: ${data.error || "Nieznany błąd"}`);
+//             return;
+//         }
 
-        const qrPayload = data.qr_payload;
-        const token = data.token;
+//         const qrPayload = data.qr_payload;
+//         const token = data.token;
 
-        const inst = ensureQrInstance();
-        if (!inst) {
-            showPlaceholder("Nie udało się zainicjalizować generatora kodów QR");
-            return;
-        }
+//         const inst = ensureQrInstance();
+//         if (!inst) {
+//             showPlaceholder("Nie udało się zainicjalizować generatora kodów QR");
+//             return;
+//         }
 
-        inst.clear();
-        inst.makeCode(qrPayload);
+//         inst.clear();
+//         inst.makeCode(qrPayload);
 
-        // (Opcjonalnie) możesz gdzieś w UI pokazać token / status ważności:
-        // console.log("Nowa sesja:", token, "ważna (s) =", data.expires_in);
+//         // (Opcjonalnie) możesz gdzieś w UI pokazać token / status ważności:
+//         // console.log("Nowa sesja:", token, "ważna (s) =", data.expires_in);
 
-    } catch (err) {
-        showPlaceholder(`Nie udało się utworzyć sesji: ${err.message || err}`);
-    }
-}
+//     } catch (err) {
+//         showPlaceholder(`Nie udało się utworzyć sesji: ${err.message || err}`);
+//     }
+// }
 
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("url-input");
